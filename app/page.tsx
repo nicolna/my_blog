@@ -114,7 +114,7 @@ async function getCategories(): Promise<Category[]> {
 
     console.log('카테고리 데이터 가져오기 성공:', JSON.stringify(categories, null, 2));
     
-    const formattedCategories = categories.map(category => ({
+    const formattedCategories = categories.map((category: any) => ({
       id: category.id,
       name: category.name,
       slug: category.slug,

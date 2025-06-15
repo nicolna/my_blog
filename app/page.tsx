@@ -94,6 +94,7 @@ async function getCategories(): Promise<Category[]> {
   console.log('카테고리 데이터 가져오기 시작...');
   try {
     const supabase = await createServerSupabaseClient();
+    console.log('Supabase 클라이언트 생성 완료');
 
     const { data: categories, error } = await supabase
       .from('categories')
@@ -101,12 +102,19 @@ async function getCategories(): Promise<Category[]> {
       .order('name');
 
     if (error) {
-      console.error('카테고리 데이터 가져오기 실패:', error);
+      console.error('카테고리 데이터 가져오기 실패:', error.message);
+      console.error('에러 상세:', error);
       return [];
     }
 
-    console.log('카테고리 데이터 가져오기 성공:', categories);
-    return categories.map(category => ({
+    if (!categories || categories.length === 0) {
+      console.log('카테고리 데이터가 없습니다.');
+      return [];
+    }
+
+    console.log('카테고리 데이터 가져오기 성공:', JSON.stringify(categories, null, 2));
+    
+    const formattedCategories = categories.map(category => ({
       id: category.id,
       name: category.name,
       slug: category.slug,
@@ -115,8 +123,15 @@ async function getCategories(): Promise<Category[]> {
       created_at: category.created_at,
       updated_at: category.updated_at
     }));
+
+    console.log('변환된 카테고리 데이터:', JSON.stringify(formattedCategories, null, 2));
+    return formattedCategories;
   } catch (error) {
-    console.error('카테고리 데이터 가져오기 중 오류 발생:', error);
+    console.error('카테고리 데이터 가져오기 중 예외 발생:', error);
+    if (error instanceof Error) {
+      console.error('에러 메시지:', error.message);
+      console.error('에러 스택:', error.stack);
+    }
     return [];
   }
 }

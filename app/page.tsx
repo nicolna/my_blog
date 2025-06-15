@@ -97,16 +97,24 @@ async function getCategories(): Promise<Category[]> {
 
     const { data: categories, error } = await supabase
       .from('categories')
-      .select('*')
-      .order('name', { ascending: true })
-      .limit(6); // 홈페이지에는 최대 6개만 표시
+      .select('id, name')
+      .order('name', { ascending: true });
 
     if (error) {
       console.error('카테고리 조회 오류:', error);
       return [];
     }
 
-    console.log(`✅ 카테고리 ${categories?.length || 0}개 조회 성공`);
+    // 카테고리 ID와 이름만 로깅
+    if (categories && categories.length > 0) {
+      console.log('현재 등록된 카테고리 목록:');
+      categories.forEach(cat => {
+        console.log(`ID: ${cat.id}, 이름: ${cat.name}`);
+      });
+    } else {
+      console.log('등록된 카테고리가 없습니다.');
+    }
+
     return categories || [];
   } catch (error) {
     console.error('카테고리 조회 중 오류:', error);
@@ -127,11 +135,10 @@ export default async function Home() {
       <section className="text-center mb-20">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Welcome to My Blog
+            Indie for Life!
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
-            웹 개발, JavaScript, React, Next.js에 관한 최신 기술과 실무 경험을 공유합니다. 
-            함께 성장하는 개발자가 되어보세요.
+            주인장이 직접 플레이 해본 추천할만한 인디 게임들을 소개합니다.
           </p>
           
           {/* CTA 버튼들 */}

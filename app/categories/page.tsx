@@ -80,7 +80,7 @@ export default async function CategoriesPage() {
 
     // 각 카테고리별 게시물 수 조회
     const categoriesWithCount = await Promise.all(
-      categories.map(async (category) => {
+      categories.map(async (category: Category) => {
         const { count } = await supabase
           .from('posts')
           .select('*', { count: 'exact', head: true })
@@ -112,7 +112,7 @@ export default async function CategoriesPage() {
               <span>📚</span>
               <span>총 {categoriesWithCount.length}개의 카테고리</span>
               <span>•</span>
-              <span>{categoriesWithCount.reduce((sum, cat) => sum + cat.postCount, 0)}개의 글</span>
+              <span>{categoriesWithCount.reduce((sum: number, cat: { postCount: number }) => sum + cat.postCount, 0)}개의 글</span>
             </div>
           </div>
         </section>
@@ -120,7 +120,7 @@ export default async function CategoriesPage() {
         {/* 카테고리 그리드 */}
         <section>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {categoriesWithCount.map((category) => (
+            {categoriesWithCount.map((category: Category & { postCount: number }) => (
               <Link
                 key={category.id}
                 href={`/categories/${category.slug}`}

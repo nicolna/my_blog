@@ -91,33 +91,32 @@ async function getLatestPosts(): Promise<PostWithCategory[]> {
 
 // 카테고리 목록 조회
 async function getCategories(): Promise<Category[]> {
+  console.log('카테고리 데이터 가져오기 시작...');
   try {
-    console.log('=== 홈페이지: 카테고리 목록 조회 ===');
     const supabase = await createServerSupabaseClient();
 
     const { data: categories, error } = await supabase
       .from('categories')
-      .select('id, name')
-      .order('name', { ascending: true });
+      .select('id, name, slug, color, description, created_at, updated_at')
+      .order('name');
 
     if (error) {
-      console.error('카테고리 조회 오류:', error);
+      console.error('카테고리 데이터 가져오기 실패:', error);
       return [];
     }
 
-    // 카테고리 ID와 이름만 로깅
-    if (categories && categories.length > 0) {
-      console.log('현재 등록된 카테고리 목록:');
-      categories.forEach(cat => {
-        console.log(`ID: ${cat.id}, 이름: ${cat.name}`);
-      });
-    } else {
-      console.log('등록된 카테고리가 없습니다.');
-    }
-
-    return categories || [];
+    console.log('카테고리 데이터 가져오기 성공:', categories);
+    return categories.map(category => ({
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+      color: category.color,
+      description: category.description,
+      created_at: category.created_at,
+      updated_at: category.updated_at
+    }));
   } catch (error) {
-    console.error('카테고리 조회 중 오류:', error);
+    console.error('카테고리 데이터 가져오기 중 오류 발생:', error);
     return [];
   }
 }
